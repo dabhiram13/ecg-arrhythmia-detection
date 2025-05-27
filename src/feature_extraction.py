@@ -1,102 +1,15 @@
 import numpy as np
 import pandas as pd
-from data_preprocessing import MITBIHLoader, ECGPreprocessor, ECGSegmentation, FeatureExtractor, LabelEncoder
+from data_preprocessing import FeatureExtractor
 import pickle
 import os
 from tqdm import tqdm
 
 
 def extract_all_features():
-    """Extract features from all records"""
-    print("Loading data...")
-    loader = MITBIHLoader()
-    records, annotations = loader.load_data()
-
-    if len(records) == 0:
-        print("❌ No records loaded! Cannot proceed with feature extraction.")
-        print("This might be due to:")
-        print("1. Network connectivity issues")
-        print("2. WFDB server problems")
-        print("3. API changes")
-        print("\nTrying alternative approach...")
-
-        # Try a more direct approach
-        try:
-            import requests
-            print("Attempting manual download of sample data...")
-
-            # Create sample data for demonstration
-            sample_data = create_sample_data()
-            return sample_data
-
-        except Exception as e:
-            print(f"Alternative approach failed: {e}")
-            return [], [], []
-
-    print("Initializing processors...")
-    preprocessor = ECGPreprocessor()
-    segmenter = ECGSegmentation()
-    feature_extractor = FeatureExtractor()
-    label_encoder = LabelEncoder()
-
-    all_heartbeats = []
-    all_labels = []
-    all_features = []
-
-    print("Processing records...")
-    for i, (record, annotation) in enumerate(
-            tqdm(zip(records, annotations),
-                 desc="Processing",
-                 total=len(records))):
-        try:
-            # Preprocess signal (use first channel)
-            signal_clean = preprocessor.preprocess(record.p_signal[:, 0])
-
-            # Detect R-peaks and extract heartbeats
-            r_peaks = segmenter.detect_r_peaks(signal_clean)
-            heartbeats = segmenter.extract_heartbeats(signal_clean, r_peaks)
-
-            if len(heartbeats) == 0:
-                continue
-
-            # Create labels
-            labels = label_encoder.create_labels(annotation, r_peaks)
-
-            # Extract features for traditional ML
-            for heartbeat in heartbeats:
-                features = feature_extractor.extract_all_features(heartbeat)
-                all_features.append(features)
-
-            all_heartbeats.extend(heartbeats)
-            all_labels.extend(labels)
-
-        except Exception as e:
-            print(f"Error processing record {i}: {e}")
-            continue
-
-    # Check if we have any data
-    if len(all_heartbeats) == 0:
-        print(
-            "❌ No heartbeats extracted! Creating sample data for demonstration..."
-        )
-        sample_data = create_sample_data()
-        return sample_data
-
-    # Save processed data
-    os.makedirs('data/processed', exist_ok=True)
-
-    np.save('data/processed/heartbeats.npy', np.array(all_heartbeats))
-    with open('data/processed/labels.pkl', 'wb') as f:
-        pickle.dump(all_labels, f)
-
-    # Save features as DataFrame
-    df_features = pd.DataFrame(all_features)
-    df_features.to_csv('data/processed/features.csv', index=False)
-
-    print(f"Processed {len(all_heartbeats)} heartbeats")
-    print(f"Label distribution: {pd.Series(all_labels).value_counts()}")
-
-    return all_heartbeats, all_labels, all_features
+    """Generate synthetic ECG features"""
+    print("Generating synthetic ECG data...")
+    return create_sample_data()
 
 
 def create_sample_data():

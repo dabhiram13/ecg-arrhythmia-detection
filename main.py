@@ -45,29 +45,22 @@ def main():
                 if os.path.exists('data/processed/labels.pkl'):
                     os.remove('data/processed/labels.pkl')
 
-        # Step 1: Data Download (will use synthetic if real data fails)
-        print("\nStep 1: Downloading MIT-BIH Database...")
-        from data_preprocessing import MITBIHLoader
-        loader = MITBIHLoader()
-        records, annotations = loader.load_data()
-        print(f"✓ Loaded {len(records)} records")
-
-        # Step 2: Feature Extraction (force fresh generation)
-        print("\nStep 2: Feature Extraction...")
+        # Step 1: Feature Extraction (synthetic data generation)
+        print("\nStep 1: Feature Extraction...")
         from feature_extraction import extract_all_features
         extract_all_features()
 
-        # Step 3: Traditional ML
-        print("\nStep 3: Training Traditional ML Models...")
+        # Step 2: Traditional ML
+        print("\nStep 2: Training Traditional ML Models...")
         from traditional_ml import train_traditional_models
         traditional_results = train_traditional_models()
 
-        # Step 4: Deep Learning
-        print("\nStep 4: Training Deep Learning Models...")
+        # Step 3: Deep Learning
+        print("\nStep 3: Training Deep Learning Models...")
         from deep_learning import train_deep_models
         dl_results = train_deep_models()
 
-        # Step 5: Final Report
+        # Step 4: Final Report
         print("\n" + "=" * 50)
         print("FINAL RESULTS COMPARISON")
         print("=" * 50)
@@ -80,7 +73,7 @@ def main():
         for model, results in dl_results.items():
             print(f"{model}: {results['test_accuracy']:.2f}%")
 
-        # Step 6: Display Results
+        # Step 5: Display Results
         print("\n" + "=" * 50)
         print("PROJECT COMPLETED SUCCESSFULLY!")
         print("=" * 50)
