@@ -1,3 +1,8 @@
+import os
+# Force CPU-only mode before importing torch
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
+os.environ['OMP_NUM_THREADS'] = '1'
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -125,7 +130,10 @@ def train_deep_model(model,
                      val_loader,
                      num_epochs=20):  # Reduced epochs
     """Train deep learning model"""
-    device = torch.device('cpu')  # Force CPU for Replit
+    # Explicitly set CPU-only mode
+    import os
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+    device = torch.device('cpu')
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
